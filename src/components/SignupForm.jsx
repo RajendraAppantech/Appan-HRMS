@@ -108,7 +108,7 @@ const SignupForm = () => {
           <a href="#" className="underline font-medium">Privacy Policy</a> and{" "}
           <a href="#" className="underline font-medium">APPAN HR Terms of Service</a>.
         </p>
-      </div>
+      </div> 
 
       <button
         type="submit"
