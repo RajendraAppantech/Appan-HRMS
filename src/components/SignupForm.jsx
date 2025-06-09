@@ -10,16 +10,83 @@ const SignupForm = () => {
     agreeTerms: false,
   });
 
+  const [errors, setErrors] = useState({
+    fullName: "",
+    workEmail: "",
+    companyName: "",
+    phoneNumber: "",
+  });
+
+  const validateFullName = (name) => {
+    const nameRegex = /^[a-zA-Z\s-]{2,}$/;
+    const hasMultipleWords = name.trim().split(/\s+/).length >= 2;
+    if (!name) return "Full Name is required";
+    if (!nameRegex.test(name)) return "Full Name can only contain letters, spaces, or hyphens";
+    if (!hasMultipleWords) return "Please enter both first and last name";
+    return "";
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) return "Work Email is required";
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+    return "";
+  };
+
+  const validateCompanyName = (company) => {
+    const companyRegex = /^[a-zA-Z0-9\s&.,'-]{2,}$/;
+    if (!company) return "Company Name is required";
+    if (!companyRegex.test(company)) return "Company Name must be at least 2 characters and can only contain letters, numbers, spaces, and common symbols";
+    return "";
+  };
+
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^\d{10}$/;
+    if (!phone) return "Phone Number is required";
+    if (!phoneRegex.test(phone)) return "Please enter a valid 10-digit phone number";
+    return "";
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: newValue,
+    }));
+
+    let error = "";
+    if (name === "fullName") error = validateFullName(value);
+    if (name === "workEmail") error = validateEmail(value);
+    if (name === "companyName") error = validateCompanyName(value);
+    if (name === "phoneNumber") error = validatePhoneNumber(value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const fullNameError = validateFullName(formData.fullName);
+    const emailError = validateEmail(formData.workEmail);
+    const companyError = validateCompanyName(formData.companyName);
+    const phoneError = validatePhoneNumber(formData.phoneNumber);
+
+    setErrors({
+      fullName: fullNameError,
+      workEmail: emailError,
+      companyName: companyError,
+      phoneNumber: phoneError,
+    });
+
+    if (fullNameError || emailError || companyError || phoneError) {
+      return;
+    }
+
     console.log("Form submitted:", formData);
   };
 
@@ -33,32 +100,56 @@ const SignupForm = () => {
       </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Full Name*"
-          className="w-full p-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          value={formData.fullName}
-          onChange={handleChange}
-        />
-        <input
-          type="email"
-          name="workEmail"
-          placeholder="Work Email*"
-          className="w-full p-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          value={formData.workEmail}
-          onChange={handleChange}
-        />
+        <div>
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Full Name*"
+            className={`w-full p-3 border ${
+              errors.fullName ? "border-red-500" : "border-gray-300"
+            } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+            value={formData.fullName}
+            onChange={handleChange}
+            required
+          />
+          {errors.fullName && (
+            <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+          )}
+        </div>
+        <div>
+          <input
+            type="email"
+            name="workEmail"
+            placeholder="Work Email*"
+            className={`w-full p-3 border ${
+              errors.workEmail ? "border-red-500" : "border-gray-300"
+            } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+            value={formData.workEmail}
+            onChange={handleChange}
+            required
+          />
+          {errors.workEmail && (
+            <p className="text-red-500 text-xs mt-1">{errors.workEmail}</p>
+          )}
+        </div>
       </div>
 
-      <input
-        type="text"
-        name="companyName"
-        placeholder="Company Name*"
-        className="w-full p-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-        value={formData.companyName}
-        onChange={handleChange}
-      />
+      <div>
+        <input
+          type="text"
+          name="companyName"
+          placeholder="Company Name*"
+          className={`w-full p-3 border ${
+            errors.companyName ? "border-red-500" : "border-gray-300"
+          } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+          value={formData.companyName}
+          onChange={handleChange}
+          required
+        />
+        {errors.companyName && (
+          <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>
+        )}
+      </div>
 
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
         <div className="flex items-center border border-gray-300 rounded-lg px-3 w-full sm:w-auto">
@@ -69,14 +160,22 @@ const SignupForm = () => {
           />
           <span className="ml-2 text-sm text-gray-500">+91</span>
         </div>
-        <input
-          type="tel"
-          name="phoneNumber"
-          placeholder="00000 00000"
-          className="w-full p-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-        />
+        <div className="w-full">
+          <input
+            type="tel"
+            name="phoneNumber"
+            placeholder="00000 00000"
+            className={`w-full p-3 border ${
+              errors.phoneNumber ? "border-red-500" : "border-gray-300"
+            } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+          />
+          {errors.phoneNumber && (
+            <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
+          )}
+        </div>
       </div>
 
       <select
@@ -108,7 +207,7 @@ const SignupForm = () => {
           <a href="#" className="underline font-medium">Privacy Policy</a> and{" "}
           <a href="#" className="underline font-medium">APPAN HR Terms of Service</a>.
         </p>
-      </div> 
+      </div>
 
       <button
         type="submit"
