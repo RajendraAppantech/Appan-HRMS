@@ -44,5 +44,9 @@
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.4"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/RajendraAppantech/Appan-HRMS.git",
+  "author": "Appantech <rajendra.tonde@appandukan.com>",
+  "license": "MIT"
 }
