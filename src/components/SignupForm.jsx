@@ -15,6 +15,7 @@ const SignupForm = () => {
     workEmail: "",
     companyName: "",
     phoneNumber: "",
+    agreeTerms: "",
   });
 
   const validateFullName = (name) => {
@@ -26,12 +27,24 @@ const SignupForm = () => {
     return "";
   };
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) return "Work Email is required";
-    if (!emailRegex.test(email)) return "Please enter a valid email address";
-    return "";
-  };
+const validateEmail = (email) => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com)$/;
+  
+  if (!email) return "Work Email is required";
+  
+  // Ensure email strictly ends with ".com" and nothing after that
+  if (!emailRegex.test(email) || !email.endsWith(".com")) {
+    return "Please enter a valid email address";
+  }
+
+  // Additional validations to reject invalid sequences
+  if (email.includes("..") || email.includes("@.") || email.endsWith(".")) {
+    return "Please enter a valid email address";
+  }
+
+  return "";
+};
+
 
   const validateCompanyName = (company) => {
     const companyRegex = /^[a-zA-Z0-9\s&.,'-]{2,}$/;
@@ -41,9 +54,12 @@ const SignupForm = () => {
   };
 
   const validatePhoneNumber = (phone) => {
-    const phoneRegex = /^\d{10}$/;
-    if (!phone) return "Phone Number is required";
-    if (!phoneRegex.test(phone)) return "Please enter a valid 10-digit phone number";
+    const cleanPhone = phone.replace(/\D/g, '');
+    const phoneRegex = /^[6-9]\d{9}$/;
+    const repetitiveRegex = /^(\d)\1{9}$/;
+    if (!cleanPhone) return "Phone Number is required";
+    if (!phoneRegex.test(cleanPhone)) return "Please enter a valid 10-digit phone number";
+    if (repetitiveRegex.test(cleanPhone)) return "Phone number cannot consist of the same digit repeated";
     return "";
   };
 
@@ -60,7 +76,7 @@ const SignupForm = () => {
     if (name === "fullName") error = validateFullName(value);
     if (name === "workEmail") error = validateEmail(value);
     if (name === "companyName") error = validateCompanyName(value);
-    if (name === "phoneNumber") error = validatePhoneNumber(value);
+    if (name === "phoneNumber") error = validatePhoneNumber(value.replace(/\D/g, ''));
 
     setErrors((prev) => ({
       ...prev,
@@ -74,16 +90,18 @@ const SignupForm = () => {
     const fullNameError = validateFullName(formData.fullName);
     const emailError = validateEmail(formData.workEmail);
     const companyError = validateCompanyName(formData.companyName);
-    const phoneError = validatePhoneNumber(formData.phoneNumber);
+    const phoneError = validatePhoneNumber(formData.phoneNumber.replace(/\D/g, ''));
+    const termsError = !formData.agreeTerms ? "You must agree to the terms" : "";
 
     setErrors({
       fullName: fullNameError,
       workEmail: emailError,
       companyName: companyError,
       phoneNumber: phoneError,
+      agreeTerms: termsError,
     });
 
-    if (fullNameError || emailError || companyError || phoneError) {
+    if (fullNameError || emailError || companyError || phoneError || termsError) {
       return;
     }
 
@@ -208,6 +226,9 @@ const SignupForm = () => {
           <a href="#" className="underline font-medium">APPAN HR Terms of Service</a>.
         </p>
       </div>
+      {errors.agreeTerms && (
+        <p className="text-red-500 text-xs mt-1">{errors.agreeTerms}</p>
+      )}
 
       <button
         type="submit"
