@@ -251,7 +251,7 @@ const SignupForm = () => {
             </a>{" "}
             and{" "}
             <a href="#" className="underline font-medium">
-              APPAN HR Terms of Service
+              APPAN HR Terms of Services
             </a>
             .
           </p>
