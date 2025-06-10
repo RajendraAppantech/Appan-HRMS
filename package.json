@@ -2,6 +2,7 @@
   "name": "appan-hr",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "yarn@4.8.1",
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.8",
     "@testing-library/dom": "^10.4.0",
@@ -51,3 +52,4 @@
   "author": "Appantech <rajendra.tonde@appandukan.com>",
   "license": "MIT"
 }
+
