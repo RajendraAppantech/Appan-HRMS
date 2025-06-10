@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Confetti from "react-confetti";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -18,48 +19,55 @@ const SignupForm = () => {
     agreeTerms: "",
   });
 
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const requestId = "23432435333"; // You can generate this dynamically if needed
+
   const validateFullName = (name) => {
     const nameRegex = /^[a-zA-Z\s-]{2,}$/;
     const hasMultipleWords = name.trim().split(/\s+/).length >= 2;
     if (!name) return "Full Name is required";
-    if (!nameRegex.test(name)) return "Full Name can only contain letters, spaces, or hyphens";
+    if (!nameRegex.test(name))
+      return "Full Name can only contain letters, spaces, or hyphens";
     if (!hasMultipleWords) return "Please enter both first and last name";
     return "";
   };
 
-const validateEmail = (email) => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com)$/;
-  
-  if (!email) return "Work Email is required";
-  
-  // Ensure email strictly ends with ".com" and nothing after that
-  if (!emailRegex.test(email) || !email.endsWith(".com")) {
-    return "Please enter a valid email address";
-  }
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com)$/;
 
-  // Additional validations to reject invalid sequences
-  if (email.includes("..") || email.includes("@.") || email.endsWith(".")) {
-    return "Please enter a valid email address";
-  }
+    if (!email) return "Work Email is required";
 
-  return "";
-};
+    // Ensure email strictly ends with ".com" and nothing after that
+    if (!emailRegex.test(email) || !email.endsWith(".com")) {
+      return "Please enter a valid email address";
+    }
 
+    // Additional validations to reject invalid sequences
+    if (email.includes("..") || email.includes("@.") || email.endsWith(".")) {
+      return "Please enter a valid email address";
+    }
+
+    return "";
+  };
 
   const validateCompanyName = (company) => {
     const companyRegex = /^[a-zA-Z0-9\s&.,'-]{2,}$/;
     if (!company) return "Company Name is required";
-    if (!companyRegex.test(company)) return "Company Name must be at least 2 characters and can only contain letters, numbers, spaces, and common symbols";
+    if (!companyRegex.test(company))
+      return "Company Name must be at least 2 characters and can only contain letters, numbers, spaces, and common symbols";
     return "";
   };
 
   const validatePhoneNumber = (phone) => {
-    const cleanPhone = phone.replace(/\D/g, '');
+    const cleanPhone = phone.replace(/\D/g, "");
     const phoneRegex = /^[6-9]\d{9}$/;
     const repetitiveRegex = /^(\d)\1{9}$/;
     if (!cleanPhone) return "Phone Number is required";
-    if (!phoneRegex.test(cleanPhone)) return "Please enter a valid 10-digit phone number";
-    if (repetitiveRegex.test(cleanPhone)) return "Phone number cannot consist of the same digit repeated";
+    if (!phoneRegex.test(cleanPhone))
+      return "Please enter a valid 10-digit phone number";
+    if (repetitiveRegex.test(cleanPhone))
+      return "Phone number cannot consist of the same digit repeated";
     return "";
   };
 
@@ -76,7 +84,8 @@ const validateEmail = (email) => {
     if (name === "fullName") error = validateFullName(value);
     if (name === "workEmail") error = validateEmail(value);
     if (name === "companyName") error = validateCompanyName(value);
-    if (name === "phoneNumber") error = validatePhoneNumber(value.replace(/\D/g, ''));
+    if (name === "phoneNumber")
+      error = validatePhoneNumber(value.replace(/\D/g, ""));
 
     setErrors((prev) => ({
       ...prev,
@@ -90,8 +99,12 @@ const validateEmail = (email) => {
     const fullNameError = validateFullName(formData.fullName);
     const emailError = validateEmail(formData.workEmail);
     const companyError = validateCompanyName(formData.companyName);
-    const phoneError = validatePhoneNumber(formData.phoneNumber.replace(/\D/g, ''));
-    const termsError = !formData.agreeTerms ? "You must agree to the terms" : "";
+    const phoneError = validatePhoneNumber(
+      formData.phoneNumber.replace(/\D/g, "")
+    );
+    const termsError = !formData.agreeTerms
+      ? "You must agree to the terms"
+      : "";
 
     setErrors({
       fullName: fullNameError,
@@ -101,142 +114,183 @@ const validateEmail = (email) => {
       agreeTerms: termsError,
     });
 
-    if (fullNameError || emailError || companyError || phoneError || termsError) {
+    if (
+      fullNameError ||
+      emailError ||
+      companyError ||
+      phoneError ||
+      termsError
+    ) {
       return;
     }
 
     console.log("Form submitted:", formData);
+    // Show success modal
+    setShowSuccess(true);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col w-full max-w-[300px] sm:max-w-[350px] lg:max-w-[451.19px] h-auto sm:h-[500px] lg:h-[556.09px] gap-4 sm:gap-5 lg:gap-[26px] rounded-[20px] px-4 sm:px-6 lg:px-[40px] py-4 sm:py-5 lg:pt-[24px] lg:pb-[24px] bg-white shadow-md mx-auto"
-    >
-      <h3 className="text-lg sm:text-xl lg:text-xl font-bold text-[#0D1A26] text-center">
-        Get a Free Trial Today!
-      </h3>
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col w-full max-w-[300px] sm:max-w-[350px] lg:max-w-[451.19px] h-auto sm:h-[500px] lg:h-[556.09px] gap-4 sm:gap-5 lg:gap-[26px] rounded-[20px] px-4 sm:px-6 lg:px-[40px] py-4 sm:py-5 lg:pt-[24px] lg:pb-[24px] bg-white shadow-md mx-auto"
+      >
+        <h3 className="text-lg sm:text-xl lg:text-xl font-bold text-[#0D1A26] text-center">
+          Get a Free Trial Today!
+        </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name*"
+              className={`w-full p-3 border ${
+                errors.fullName ? "border-red-500" : "border-gray-300"
+              } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+            />
+            {errors.fullName && (
+              <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+            )}
+          </div>
+          <div>
+            <input
+              type="email"
+              name="workEmail"
+              placeholder="Work Email*"
+              className={`w-full p-3 border ${
+                errors.workEmail ? "border-red-500" : "border-gray-300"
+              } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              value={formData.workEmail}
+              onChange={handleChange}
+              required
+            />
+            {errors.workEmail && (
+              <p className="text-red-500 text-xs mt-1">{errors.workEmail}</p>
+            )}
+          </div>
+        </div>
+
         <div>
           <input
             type="text"
-            name="fullName"
-            placeholder="Full Name*"
+            name="companyName"
+            placeholder="Company Name*"
             className={`w-full p-3 border ${
-              errors.fullName ? "border-red-500" : "border-gray-300"
+              errors.companyName ? "border-red-500" : "border-gray-300"
             } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-            value={formData.fullName}
+            value={formData.companyName}
             onChange={handleChange}
             required
           />
-          {errors.fullName && (
-            <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+          {errors.companyName && (
+            <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>
           )}
         </div>
-        <div>
-          <input
-            type="email"
-            name="workEmail"
-            placeholder="Work Email*"
-            className={`w-full p-3 border ${
-              errors.workEmail ? "border-red-500" : "border-gray-300"
-            } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-            value={formData.workEmail}
-            onChange={handleChange}
-            required
-          />
-          {errors.workEmail && (
-            <p className="text-red-500 text-xs mt-1">{errors.workEmail}</p>
-          )}
-        </div>
-      </div>
 
-      <div>
-        <input
-          type="text"
-          name="companyName"
-          placeholder="Company Name*"
-          className={`w-full p-3 border ${
-            errors.companyName ? "border-red-500" : "border-gray-300"
-          } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-          value={formData.companyName}
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+          <div className="flex items-center border border-gray-300 rounded-lg px-3 w-full sm:w-auto">
+            <img
+              src="https://flagcdn.com/w40/in.png"
+              alt="IN Flag"
+              className="w-5 h-auto"
+            />
+            <span className="ml-2 text-sm text-gray-500">+91</span>
+          </div>
+          <div className="w-full">
+            <input
+              type="tel"
+              name="phoneNumber"
+              placeholder="00000 00000"
+              className={`w-full p-3 border ${
+                errors.phoneNumber ? "border-red-500" : "border-gray-300"
+              } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              required
+            />
+            {errors.phoneNumber && (
+              <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
+            )}
+          </div>
+        </div>
+
+        <select
+          name="employeeCount"
+          className="w-full p-3 border border-gray-300 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          value={formData.employeeCount}
           onChange={handleChange}
           required
-        />
-        {errors.companyName && (
-          <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>
+        >
+          <option value="">Employee Count Range*</option>
+          <option value="1-10">1–10</option>
+          <option value="11-50">11–50</option>
+          <option value="51-100">51–100</option>
+          <option value="101-500">101–500</option>
+          <option value="500+">500+</option>
+        </select>
+
+        <div className="flex items-start space-x-2 text-xs text-gray-500 leading-tight">
+          <input
+            type="checkbox"
+            name="agreeTerms"
+            className="mt-1 h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-gray-300 rounded"
+            checked={formData.agreeTerms}
+            onChange={handleChange}
+            required
+          />
+          <p>
+            We respect your data. By submitting this form, you agree that we
+            will contact you in relation to our products and services, in
+            accordance with our{" "}
+            <a href="#" className="underline font-medium">
+              Privacy Policy
+            </a>{" "}
+            and{" "}
+            <a href="#" className="underline font-medium">
+              APPAN HR Terms of Service
+            </a>
+            .
+          </p>
+        </div>
+        {errors.agreeTerms && (
+          <p className="text-red-500 text-xs mt-1">{errors.agreeTerms}</p>
         )}
-      </div>
 
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-        <div className="flex items-center border border-gray-300 rounded-lg px-3 w-full sm:w-auto">
-          <img
-            src="https://flagcdn.com/w40/in.png"
-            alt="IN Flag"
-            className="w-5 h-auto"
-          />
-          <span className="ml-2 text-sm text-gray-500">+91</span>
+        <button
+          type="submit"
+          className="w-full bg-[#003F3F] text-white p-3 rounded-lg font-semibold text-sm uppercase hover:bg-[#002f2f] transition-colors"
+        >
+          Join Today
+        </button>
+      </form>
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <Confetti numberOfPieces={300} recycle={false} gravity={0.3} />
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center relative w-[90%] max-w-md">
+            <div className="text-green-600 text-5xl mb-4">✓</div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
+              Your request has been submitted successfully.
+            </h2>
+            <p className="text-gray-600 text-sm mb-2">
+              <strong>Request ID:</strong> {requestId}
+            </p>
+            <p className="text-gray-600 text-sm mb-6">
+              Our team will contact you soon!
+            </p>
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="bg-[#4F46E5] text-white px-6 py-2 rounded-lg font-semibold"
+            >
+              OK
+            </button>
+          </div>
         </div>
-        <div className="w-full">
-          <input
-            type="tel"
-            name="phoneNumber"
-            placeholder="00000 00000"
-            className={`w-full p-3 border ${
-              errors.phoneNumber ? "border-red-500" : "border-gray-300"
-            } rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-          />
-          {errors.phoneNumber && (
-            <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
-          )}
-        </div>
-      </div>
-
-      <select
-        name="employeeCount"
-        className="w-full p-3 border border-gray-300 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-        value={formData.employeeCount}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Employee Count Range*</option>
-        <option value="1-10">1–10</option>
-        <option value="11-50">11–50</option>
-        <option value="51-100">51–100</option>
-        <option value="101-500">101–500</option>
-        <option value="500+">500+</option>
-      </select>
-
-      <div className="flex items-start space-x-2 text-xs text-gray-500 leading-tight">
-        <input
-          type="checkbox"
-          name="agreeTerms"
-          className="mt-1 h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-gray-300 rounded"
-          checked={formData.agreeTerms}
-          onChange={handleChange}
-          required
-        />
-        <p>
-          We respect your data. By submitting this form, you agree that we will contact you in relation to our products and services, in accordance with our{" "}
-          <a href="#" className="underline font-medium">Privacy Policy</a> and{" "}
-          <a href="#" className="underline font-medium">APPAN HR Terms of Service</a>.
-        </p>
-      </div>
-      {errors.agreeTerms && (
-        <p className="text-red-500 text-xs mt-1">{errors.agreeTerms}</p>
       )}
-
-      <button
-        type="submit"
-        className="w-full bg-[#003F3F] text-white p-3 rounded-lg font-semibold text-sm uppercase hover:bg-[#002f2f] transition-colors"
-      >
-        Join Today
-      </button>
-    </form>
+    </>
   );
 };
 
